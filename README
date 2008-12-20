@@ -1,0 +1,11 @@
+# Nvivo API digester
+
+A small Ruby class for consuming [Nvivo API](http://www.nvivo.es/api/index.php).
+
+Requires (all them installable with `sudo gem install`):
+
+  - rubygems
+  - httparty
+  - terminator
+
+Copyright (c) 2008 [Fernando Blat](http://www.inwebwetrust.net), released under the MIT license
