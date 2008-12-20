@@ -4,7 +4,7 @@ $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 class NvivoTimeoutError < StandardError; end
-class NvivoInvalidResponse < StandardError 
+class NvivoError < StandardError 
   attr_reader :message
   def initialize(message)
     @message = message
@@ -33,16 +33,18 @@ class Nvivo
     begin
       status = Timeout::timeout(@timeout) {
         result = self.class.get(API_URL, options)
-        if result.empty?
-          return []
-        else
-          result['response']['events']['event']
+        if result['response']['status'] == 'success'
+          if result['response']['events'].nil?
+            return []
+          else
+            return result['response']['events']['event']
+          end
+        elsif result['response']['status'] == 'error'
+          raise NvivoError.new(result['response']['error'])
         end
       }
     rescue Timeout::Error
       raise NvivoTimeoutError
-    rescue NoMethodError => e
-      raise NvivoInvalidResponse.new($!)
     end
   end
 
