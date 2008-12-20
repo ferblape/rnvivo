@@ -1,9 +1,16 @@
-%w{rubygems httparty terminator}.each { |x| require x }
+%w{rubygems httparty terminator mocha}.each { |x| require x }
 
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 class NvivoTimeoutError < StandardError; end
+class NvivoInvalidResponse < StandardError 
+  attr_reader :message
+  def initialize(message)
+    @message = message
+  end
+  
+end
 
 class Nvivo
   
@@ -28,6 +35,8 @@ class Nvivo
     end
   rescue Terminator::Error
     raise NvivoTimeoutError
+  rescue NoMethodError => e
+    raise NvivoInvalidResponse.new($!)
   end
 
 end
