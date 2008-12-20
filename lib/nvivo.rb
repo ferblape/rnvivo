@@ -32,7 +32,12 @@ class Nvivo
     
     begin
       status = Timeout::timeout(@timeout) {
-        return self.class.get(API_URL, options)['response']['events']['event']
+        result = self.class.get(API_URL, options)
+        if result.empty?
+          return []
+        else
+          result['response']['events']['event']
+        end
       }
     rescue Timeout::Error
       raise NvivoTimeoutError
