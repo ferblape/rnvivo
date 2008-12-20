@@ -1,4 +1,4 @@
-%w{rubygems httparty terminator mocha}.each { |x| require x }
+%w{rubygems httparty mocha timeout}.each { |x| require x }
 
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
@@ -30,13 +30,15 @@ class Nvivo
     
     options = { :query => { :method => 'city.getEvents', :city => city, :api_key => @api_key } }
     
-    Terminator.terminate @timeout do
-      return self.class.get(API_URL, options)['response']['events']['event']
+    begin
+      status = Timeout::timeout(@timeout) {
+        return self.class.get(API_URL, options)['response']['events']['event']
+      }
+    rescue Timeout::Error
+      raise NvivoTimeoutError
+    rescue NoMethodError => e
+      raise NvivoInvalidResponse.new($!)
     end
-  rescue Terminator::Error
-    raise NvivoTimeoutError
-  rescue NoMethodError => e
-    raise NvivoInvalidResponse.new($!)
   end
 
 end
