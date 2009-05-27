@@ -25,10 +25,11 @@ class Nvivo
     @timeout = timeout
   end
 
-  def cityGetEvents(city)
+  def cityGetEvents(city, country)
     raise ArgumentError, 'You must indicate a city' if city.blank?
+    raise ArgumentError, 'You must indicate a country' if country.blank?
     
-    options = { :query => { :method => 'city.getEvents', :city => city, :api_key => @api_key } }
+    options = { :query => { :method => 'city.getEvents', :city => city, :api_key => @api_key, :country_iso => country } }
     
     begin
       status = Timeout::timeout(@timeout) {
