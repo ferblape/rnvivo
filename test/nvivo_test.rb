@@ -5,25 +5,65 @@ class NvivoTest < Test::Unit::TestCase
   
   FAKE_API_KEY = 'wadus'
   
-  # TODO
-  # def test_should_timeout_if_request_time_is_greater_than_timeout
-  #   n = Nvivo.new(FAKE_API_KEY, 1)
-  #   n.cityGetEvents('Madrid')
-  # end
-  
-  def test_should_not_get_city_events_without_city_param
+  def test_should_raise_nvivo_timeout_if_timeout
+    Nvivo.stubs(:get).raises(Timeout::Error)
     n = Nvivo.new(FAKE_API_KEY)
-    assert_raises ArgumentError do
-      n.cityGetEvents()
-    end    
+    assert_raises NvivoTimeoutError do
+      response = n.cityGetEvents('Madrid', 'es')
+    end
+  end
+  
+  def test_should_get_city_events_if_city_param
+    result_200_ok = {
+      'response' => { 
+        'status' => 'success',
+        'events' => {
+          'event' => [
+            {
+              'name' => 'Wadus event',
+              'url' => 'http://wadus.com/wadus-event'
+            },
+            {
+              'name' => 'Wadus event 2',
+              'url' => 'http://wadus.com/wadus-event-2' 
+            }
+          ]
+        }
+      }
+    }
+    Nvivo.stubs(:get).returns(result_200_ok)
+    n = Nvivo.new(FAKE_API_KEY)
+    response = n.cityGetEvents('Madrid', 'es')
+    assert_equal response, result_200_ok['response']['events']['event']
   end
 
-  # TODO
-  # def test_should_get_city_events_if_city_param
-  #   Nvivo.stubs(:get).returns(Hpricot.open(File.open(File.expand_path(File.join(File.dirname(__FILE__), 'city.getEvents=London'))).read))
-  #   n = Nvivo.new(FAKE_API_KEY)
-  #   response = n.cityGetEvents('Madrid')
-  #   assert true
-  # end
+  def test_should_get_city_events_emtpy
+    result_200_ok = {
+      'response' => { 
+        'status' => 'success'
+      }
+    }
+    Nvivo.stubs(:get).returns(result_200_ok)
+    n = Nvivo.new(FAKE_API_KEY)
+    response = n.cityGetEvents('Madrid', 'es')
+    assert_equal response, []
+  end
+  
+  def test_should_return_error
+    result_error = {
+      'response' => {
+        'status' => 'error', 
+        'error'  => {
+          'id' => 7,
+          'message' => 'Error message'
+        }
+      }
+    }
+    Nvivo.stubs(:get).returns(result_error)
+    n = Nvivo.new(FAKE_API_KEY)
+    assert_raise NvivoError do
+      response = n.cityGetEvents('Madriz', 'es')
+    end
+  end
   
 end
