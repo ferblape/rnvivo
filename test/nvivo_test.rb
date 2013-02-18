@@ -1,10 +1,14 @@
-require 'test/unit'
-require File.expand_path(File.join(File.dirname(__FILE__), '/../lib/nvivo'))
-require 'mocha'
+require 'minitest/autorun'
+require File.expand_path(File.join(File.dirname(__FILE__), '/../lib/rnvivo'))
+require 'minitest/reporters'
+MiniTest::Reporters.use!
+require 'mocha/setup'
 
-class NvivoTest < Test::Unit::TestCase
+class NvivoTest < MiniTest::Unit::TestCase
   
   FAKE_API_KEY = 'wadus'
+
+  include ::Rnvivo
 
   def test_city_get_events_should_raise_nvivo_timeout_if_timeout
     Nvivo.stubs(:get).raises(Timeout::Error)
@@ -62,7 +66,7 @@ class NvivoTest < Test::Unit::TestCase
     }
     Nvivo.stubs(:get).returns(result_error)
     n = Nvivo.new(FAKE_API_KEY)
-    assert_raise NvivoError do
+    assert_raises NvivoResultError do
       response = n.cityGetEvents('Madriz', 'es')
     end
   end
@@ -111,7 +115,7 @@ class NvivoTest < Test::Unit::TestCase
     }
     Nvivo.stubs(:get).returns(result_error)
     n = Nvivo.new(FAKE_API_KEY)
-    assert_raise NvivoError do
+    assert_raises NvivoResultError do
       response = n.artistGetEvents('Wadus artist')
     end
   end
