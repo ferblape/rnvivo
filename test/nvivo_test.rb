@@ -1,5 +1,6 @@
 require 'test/unit'
 require File.expand_path(File.join(File.dirname(__FILE__), '/../lib/nvivo'))
+require 'mocha'
 
 class NvivoTest < Test::Unit::TestCase
   
