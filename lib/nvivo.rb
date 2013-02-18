@@ -9,7 +9,14 @@ class NvivoError < StandardError
   def initialize(message)
     @message = message
   end
-  
+
+end
+
+
+class String
+  def blank?
+    nil? || self.strip == ""
+  end
 end
 
 class Nvivo
@@ -49,4 +56,33 @@ class Nvivo
     end
   end
 
+  def artistGetEvents(artist, country='all', past = false)
+    raise ArgumentError, 'You must indicate an artist' if artist.blank?
+
+    options = { :query => {
+        :method => 'artist.getEvents',
+        :artist => artist,
+        :api_key => @api_key,
+        :county_iso => country,
+        :past => past}
+    }
+
+    begin
+      status = Timeout::timeout(@timeout) {
+        result = self.class.get(API_URL, options)
+
+        if result['response']['status'] == 'success'
+          if result['response']['events'].nil?
+            []
+          else
+            result['response']['events']['event']
+          end
+        elsif result['response']['status'] == 'error'
+          raise NvivoError.new(result['response']['error'])
+        end
+      }
+    rescue Timeout::Error
+      raise NvivoTimeoutError
+    end
+  end
 end
