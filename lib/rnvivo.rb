@@ -61,6 +61,18 @@ module Rnvivo
       end
     end
 
+    def venueGetEvents(venue_id, past = false)
+      raise ArgumentError, 'You must indicate a venue' if venue_id.blank?
+
+      options = query 'venue.getEvents',
+                      :venue_id => venue_id,
+                      :past => past
+
+      deal_with_response_for options do |r|
+        return nested_result r, 'response', 'events', 'event'
+      end
+    end
+
     protected
 
     def query method, *args
