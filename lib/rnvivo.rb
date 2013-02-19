@@ -73,6 +73,18 @@ module Rnvivo
       end
     end
 
+    def venueFind(venue_name, country='all')
+      raise ArgumentError, 'You must indicate a venue name' if venue_name.blank?
+
+      options = query 'venue.find',
+                      :venue_name => venue_name,
+                      :country_iso => country
+
+      deal_with_response_for options do |r|
+        return nested_result r, 'response', 'venues', 'venue'
+      end
+    end
+
     protected
 
     def query method, *args
