@@ -61,6 +61,52 @@ module Rnvivo
       end
     end
 
+    def venueGetEvents(venue_id, past = false)
+      raise ArgumentError, 'You must indicate a venue' if venue_id.blank?
+
+      options = query 'venue.getEvents',
+                      :venue_id => venue_id,
+                      :past => past
+
+      deal_with_response_for options do |r|
+        return nested_result r, 'response', 'events', 'event'
+      end
+    end
+
+    def userGetEvents(user)
+      raise ArgumentError, 'You must indicate a user' if user.blank?
+
+      options = query 'user.getEvents',
+                      :user => user
+
+      deal_with_response_for(options) do |r|
+        return nested_result r, 'response', 'events', 'event'
+      end
+    end
+
+    def venueFind(venue_name, country='all')
+      raise ArgumentError, 'You must indicate a venue name' if venue_name.blank?
+
+      options = query 'venue.find',
+                      :venue_name => venue_name,
+                      :country_iso => country
+
+      deal_with_response_for options do |r|
+        return nested_result r, 'response', 'venues', 'venue'
+      end
+    end
+
+    def venueGet(venue_id)
+      raise ArgumentError, 'You must inidicate a venue id' if venue_id.blank?
+
+      options = query 'venue.get',
+                      :venue_id => venue_id
+
+      deal_with_response_for options do |r|
+        return nested_result r, 'response', 'venue'
+      end
+    end
+
     protected
 
     def query method, *args
