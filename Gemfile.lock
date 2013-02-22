@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rnvivo (0.0.1)
+    rnvivo (1.0.0)
       httparty
 
 GEM
