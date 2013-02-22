@@ -10,7 +10,7 @@ Just run `bundle install`.
 
 Once you have your API Key, just initalize the client and run the methods you want:
 
-    nvivo = Nvivo.new NVIVO_API_KEY
+    nvivo = Rnvivo::Nvivo.new NVIVO_API_KEY
     events = nvivo.cityGetEvents('Madrid')
 
 It returns an array of hashes with the name and the nvivo URL of each one:
