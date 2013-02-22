@@ -25,7 +25,7 @@ module Rnvivo
       Nvivo.stubs(:get).returns(result_200_ok)
       n = Nvivo.new(FAKE_API_KEY)
       response = n.venueGet('91')
-      assert_equal response, result_200_ok['response']['venues']['venue']
+      assert_equal response, result_200_ok['response']['venue']
     end
 
     def test_venue_get_should_get_emtpy_venues
