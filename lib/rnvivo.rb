@@ -1,18 +1,11 @@
 %w{rubygems httparty timeout}.each { |x| require x }
 
+require 'core_ext/string'
+
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
-
-
-class String
-  def blank?
-    self !~ /[^[:space:]]/
-  end
-end
-
 module Rnvivo
-
   class NvivoError < StandardError; end
   class NvivoTimeoutError < NvivoError; end
   class NvivoResultError < NvivoError
@@ -23,7 +16,6 @@ module Rnvivo
   end
 
   class Nvivo
-
     include HTTParty
 
     API_URL = "http://www.nvivo.es/api/request.php"
@@ -35,9 +27,8 @@ module Rnvivo
       @timeout = timeout
     end
 
-    def cityGetEvents(city, country)
+    def cityGetEvents(city, country = 'all')
       raise ArgumentError, 'You must indicate a city' if city.blank?
-      raise ArgumentError, 'You must indicate a country' if country.blank?
 
       options = query 'city.getEvents',
                       :city => city,
@@ -109,17 +100,21 @@ module Rnvivo
 
     protected
 
-    def query method, *args
-      {query: args.first.merge({method: method, api_key: @api_key})}
+    def query(method, *args)
+      {
+        query: args.first.merge({
+          method: method, api_key: @api_key
+        })
+      }
     end
 
-    def nested_result result, *args
+    def nested_result(result, *args)
       args.inject(result) do |memo, obj|
         memo && memo[obj.to_s]
       end || []
     end
 
-    def deal_with_response_for options, &block
+    def deal_with_response_for(options, &block)
       Timeout::timeout(@timeout) do
         deal_with_result self.class.get(API_URL, options), &block
       end
@@ -127,7 +122,7 @@ module Rnvivo
       raise NvivoTimeoutError
     end
 
-    def deal_with_result result
+    def deal_with_result(result)
       if result['response']['status'] == 'success' && block_given?
         return yield result
       elsif result['response']['status'] == 'error'
