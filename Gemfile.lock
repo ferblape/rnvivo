@@ -10,10 +10,11 @@ GEM
     ansi (1.4.3)
     builder (3.1.4)
     hashie (2.0.0)
-    httparty (0.10.2)
-      multi_json (~> 1.0)
+    httparty (0.21.0)
+      mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
     metaclass (0.0.1)
+    mini_mime (1.1.2)
     minitest (4.6.1)
     minitest-reporters (0.14.7)
       ansi
@@ -22,8 +23,7 @@ GEM
       powerbar
     mocha (0.13.2)
       metaclass (~> 0.0.1)
-    multi_json (1.6.1)
-    multi_xml (0.5.3)
+    multi_xml (0.6.0)
     powerbar (1.0.11)
       ansi (~> 1.4.0)
       hashie (>= 1.1.0)
